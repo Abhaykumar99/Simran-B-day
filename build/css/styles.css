@@ -120,7 +120,7 @@ p{ margin:0; }
 /* ==========================================================================
    AMBIENT CANVAS + CURSOR + THREAD
    ========================================================================== */
-#bgCanvas{ position:fixed; inset:0; width:100%; height:100%; z-index:1; pointer-events:none; opacity:.8; }
+#bgCanvas{ position:fixed; inset:0; width:100%; height:100%; z-index:9999; pointer-events:none; opacity:.8; mix-blend-mode: color-dodge; }
 
 .cursor{
   position:fixed; top:0; left:0; z-index:9000; pointer-events:none;
@@ -801,4 +801,4 @@ body[data-scene="06"] .thread span { background: linear-gradient(90deg, var(--go
   .g-card:hover::after { opacity: 1; }
 }
 
-#bgCanvas { mix-blend-mode: color-dodge; opacity: 0.8; }
+

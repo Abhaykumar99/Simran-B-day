@@ -52,7 +52,7 @@
           rot: rand(0, Math.PI*2),
           vRot: rand(-0.08, 0.08),
           type: pType,
-          color: pType === 'heart' ? 'rgba(255, 219, 163, ' : (pType === 'sparkle' ? 'rgba(255, 255, 255, ' : 'rgba(255, 219, 163, ')
+          color: pType === 'heart' ? 'rgba(255, 153, 204, ' : (pType === 'sparkle' ? 'rgba(255, 255, 255, ' : 'rgba(255, 219, 163, ')
         });
       }
     }
@@ -118,7 +118,7 @@
         ctx.shadowBlur = 15;
         
         if (tp.type === 'heart') {
-          ctx.shadowColor = 'rgba(255,219,163,0.8)';
+          ctx.shadowColor = 'rgba(255,153,204,0.8)';
           ctx.fillStyle = tp.color + alpha2 + ')';
           ctx.beginPath();
           ctx.moveTo(0, 0);
