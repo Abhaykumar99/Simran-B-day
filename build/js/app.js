@@ -30,7 +30,7 @@
     });
     var iv = setInterval(function(){
       var target = Math.min(96, Math.round((loaded/total)*70) + n);
-      n += Math.random()*9 + 3;
+      n += Math.random()*25 + 15;
       var val = Math.min(99, Math.max(n, target));
       loaderNum.textContent = String(Math.floor(val)).padStart(2,'0');
       if(val >= 99){
@@ -39,9 +39,9 @@
         setTimeout(function(){
           loader.classList.add('is-done');
           startOpenSequence();
-        }, 380);
+        }, 150);
       }
-    }, 140);
+    }, 40);
   }
 
   // --- COUNTDOWN LOGIC & ADMIN OVERRIDE ---
@@ -196,7 +196,7 @@
                 localStorage.setItem('sb_fireworks_seen', '1');
                 countdownOverlay.classList.add('is-hidden');
                 fakeLoad();
-            }, 6500); // Wait 6.5s to let the full 5s premium firework show finish its trails
+            }, 4500); // Wait 4.5s for fireworks
             return false;
         } else {
             countdownOverlay.classList.add('is-hidden');
