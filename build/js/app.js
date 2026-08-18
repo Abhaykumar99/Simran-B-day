@@ -731,10 +731,49 @@
     });
   }
 
-  var observer = new IntersectionObserver(function(entries) {
+  var cakeObserver = new IntersectionObserver(function(entries) {
     if(entries[0].isIntersecting) {
       initMic();
     }
   }, { threshold: 0.5 });
-  observer.observe(cakeSection);
+  if(cakeSection) cakeObserver.observe(cakeSection);
+
+  // --- NEW FEATURES ---
+  
+  // 1. Stars Game
+  var starsCanvas = document.getElementById('starsGameCanvas');
+  if(starsCanvas && window.CineFX && window.CineFX.StarsGame) {
+    window.CineFX.StarsGame(starsCanvas);
+  }
+
+  // 2. Secret Envelope
+  var envelope = document.getElementById('envelopeWrapper');
+  if(envelope) {
+    envelope.addEventListener('click', function() {
+      envelope.classList.add('open');
+    });
+  }
+
+  // 3. Confetti on Finale
+  var confettiCanvas = document.getElementById('confettiCanvas');
+  var confettiField = null;
+  if(confettiCanvas && window.CineFX && window.CineFX.ConfettiField) {
+    confettiField = window.CineFX.ConfettiField(confettiCanvas);
+  }
+
+  var finaleSection = document.getElementById('s-finale');
+  var hasBurstConfetti = false;
+  if(finaleSection && confettiField) {
+    var finaleObserver = new IntersectionObserver(function(entries) {
+      if(entries[0].isIntersecting && !hasBurstConfetti) {
+        hasBurstConfetti = true;
+        // Small delay for cinematic effect
+        setTimeout(function() {
+          confettiField.burst();
+        }, 800);
+      }
+    }, { threshold: 0.3 });
+    finaleObserver.observe(finaleSection);
+  }
+
 })();

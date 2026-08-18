@@ -525,12 +525,186 @@
     return { burst: burst };
   }
 
+  // Stars Game Field
+  function StarsGame(canvas) {
+    var ctx = canvas.getContext('2d');
+    var dims = resizeCanvas(canvas);
+    window.addEventListener('resize', function(){ dims = resizeCanvas(canvas); initNodes(); });
+
+    var nodes = [];
+    var edges = [];
+    var isDragging = false;
+    var currentPath = [];
+    var completed = false;
+    var glowAmt = 0;
+
+    function initNodes() {
+      var cx = dims.w / 2;
+      var cy = dims.h / 2;
+      var sc = Math.min(dims.w, dims.h) * 0.3;
+      nodes = [
+        { x: cx, y: cy + sc*0.8 }, // Bottom
+        { x: cx - sc*0.8, y: cy - sc*0.2 }, // Left middle
+        { x: cx - sc*0.4, y: cy - sc*0.6 }, // Left top
+        { x: cx, y: cy - sc*0.3 }, // Top middle dip
+        { x: cx + sc*0.4, y: cy - sc*0.6 }, // Right top
+        { x: cx + sc*0.8, y: cy - sc*0.2 }  // Right middle
+      ];
+      edges = [];
+      currentPath = [];
+      completed = false;
+      glowAmt = 0;
+    }
+    initNodes();
+
+    function getClosestNode(x, y) {
+      var closest = -1;
+      var minDist = 40;
+      for(var i=0; i<nodes.length; i++){
+        var d = Math.hypot(nodes[i].x - x, nodes[i].y - y);
+        if(d < minDist) { minDist = d; closest = i; }
+      }
+      return closest;
+    }
+
+    function handleDown(x, y) {
+      if(completed) return;
+      var idx = getClosestNode(x, y);
+      if(idx !== -1) {
+        isDragging = true;
+        currentPath = [idx];
+        edges = [];
+      }
+    }
+    function handleMove(x, y) {
+      if(!isDragging || completed) return;
+      var idx = getClosestNode(x, y);
+      if(idx !== -1 && currentPath[currentPath.length-1] !== idx) {
+        currentPath.push(idx);
+        edges.push({ from: currentPath[currentPath.length-2], to: idx });
+        
+        var uniqueNodes = new Set(currentPath);
+        if(uniqueNodes.size === nodes.length && currentPath[0] === currentPath[currentPath.length-1]) {
+          completed = true;
+          isDragging = false;
+        }
+      }
+    }
+    function handleUp() {
+      isDragging = false;
+      if(!completed) {
+        edges = [];
+        currentPath = [];
+      }
+    }
+
+    canvas.addEventListener('mousedown', function(e){ handleDown(e.offsetX, e.offsetY); });
+    canvas.addEventListener('mousemove', function(e){ handleMove(e.offsetX, e.offsetY); });
+    canvas.addEventListener('mouseup', handleUp);
+    canvas.addEventListener('mouseleave', handleUp);
+
+    canvas.addEventListener('touchstart', function(e){ var t=e.touches[0]; var r=canvas.getBoundingClientRect(); handleDown(t.clientX-r.left, t.clientY-r.top); e.preventDefault(); }, {passive:false});
+    canvas.addEventListener('touchmove', function(e){ var t=e.touches[0]; var r=canvas.getBoundingClientRect(); handleMove(t.clientX-r.left, t.clientY-r.top); e.preventDefault(); }, {passive:false});
+    canvas.addEventListener('touchend', handleUp);
+
+    function tick() {
+      ctx.clearRect(0, 0, dims.w, dims.h);
+      if(completed && glowAmt < 1) glowAmt += 0.02;
+
+      ctx.beginPath();
+      for(var i=0; i<edges.length; i++) {
+        var p1 = nodes[edges[i].from], p2 = nodes[edges[i].to];
+        ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+      }
+      ctx.strokeStyle = completed ? 'rgba(255, 219, 163, ' + (0.5 + glowAmt*0.5) + ')' : 'rgba(255, 219, 163, 0.4)';
+      ctx.lineWidth = completed ? 3 + glowAmt*2 : 2;
+      ctx.stroke();
+
+      if(completed) {
+        ctx.beginPath();
+        ctx.moveTo(nodes[0].x, nodes[0].y);
+        for(var j=1; j<nodes.length; j++) ctx.lineTo(nodes[j].x, nodes[j].y);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(255, 182, 193, ' + (glowAmt*0.3) + ')';
+        ctx.fill();
+      }
+
+      for(var i=0; i<nodes.length; i++){
+        var isActive = currentPath.includes(i);
+        ctx.beginPath();
+        ctx.arc(nodes[i].x, nodes[i].y, completed ? 6 : (isActive ? 5 : 3), 0, Math.PI*2);
+        ctx.fillStyle = completed ? '#fff' : (isActive ? '#ffdba3' : 'rgba(255,255,255,0.5)');
+        ctx.fill();
+        if(completed || isActive) {
+          ctx.shadowBlur = 10; ctx.shadowColor = '#ffdba3';
+          ctx.fill(); ctx.shadowBlur = 0;
+        }
+      }
+
+      if(!reduced) requestAnimationFrame(tick);
+    }
+    tick();
+  }
+
+  // Confetti Field
+  function ConfettiField(canvas) {
+    var ctx = canvas.getContext('2d');
+    var dims = resizeCanvas(canvas);
+    window.addEventListener('resize', function(){ dims = resizeCanvas(canvas); });
+
+    var particles = [];
+    var colors = ['#d8a05e', '#ffb6c1', '#ffffff', '#c0803c'];
+
+    function burst() {
+      for(var i=0; i<150; i++) {
+        particles.push({
+          x: dims.w / 2 + rand(-100, 100), y: dims.h,
+          vx: rand(-12, 12), vy: rand(-20, -35),
+          size: rand(4, 10),
+          color: colors[Math.floor(Math.random()*colors.length)],
+          rot: rand(0, Math.PI*2),
+          vRot: rand(-0.2, 0.2),
+          life: 1, decay: rand(0.005, 0.012)
+        });
+      }
+    }
+
+    function tick() {
+      ctx.clearRect(0,0,dims.w,dims.h);
+      for(var i=particles.length-1; i>=0; i--){
+        var p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.5; // gravity
+        p.vx *= 0.98; // friction
+        p.rot += p.vRot;
+        p.life -= p.decay;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+        ctx.restore();
+
+        if(p.life <= 0 || p.y > dims.h) particles.splice(i, 1);
+      }
+      requestAnimationFrame(tick);
+    }
+    tick();
+
+    return { burst: burst };
+  }
+
   window.CineFX = {
     AmbientField: AmbientField,
     OpenField: OpenField,
     SmokeField: SmokeField,
     FinaleField: FinaleField,
     FireworkField: FireworkField,
+    StarsGame: StarsGame,
+    ConfettiField: ConfettiField,
     isMobile: isMobile,
     reduced: reduced
   };
