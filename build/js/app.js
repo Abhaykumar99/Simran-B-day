@@ -55,7 +55,7 @@
     fireworksAlreadySeen = false;
   }
 
-  var targetDate = new Date('2026-08-21T00:00:00+05:30').getTime();
+  var targetDate = new Date('2026-08-18T20:36:00+05:30').getTime(); // DEMO: 18 Aug 8:36 PM
   var countdownOverlay = document.getElementById('countdownOverlay');
   var cdDays = document.getElementById('cd-days');
   var cdHours = document.getElementById('cd-hours');
@@ -76,6 +76,95 @@
 
   var countdownFinished = false;
 
+  /* ---------------------------------------------------------------------
+     HAPPY BIRTHDAY MELODY — Web Audio API synthesizer
+     Notes: G G A G C B | G G A G D C | G G G5 E C B A | F F E C D C
+     --------------------------------------------------------------------- */
+  function playBirthdaySong() {
+    try {
+      var ac = window.GlobalAudioContext;
+      if (!ac || ac.state !== 'running') return;
+
+      // Reverb (convolver) for warm hall effect
+      var reverbLen = ac.sampleRate * 2;
+      var revBuf = ac.createBuffer(2, reverbLen, ac.sampleRate);
+      for (var ch = 0; ch < 2; ch++) {
+        var d = revBuf.getChannelData(ch);
+        for (var i = 0; i < reverbLen; i++) {
+          d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / reverbLen, 2.5);
+        }
+      }
+      var convolver = ac.createConvolver();
+      convolver.buffer = revBuf;
+
+      var masterGain = ac.createGain();
+      masterGain.gain.value = 0.38;
+      masterGain.connect(ac.destination);
+
+      var revGain = ac.createGain();
+      revGain.gain.value = 0.28;
+      convolver.connect(revGain);
+      revGain.connect(ac.destination);
+
+      // Note frequencies (Hz)
+      var N = {
+        G4:392, A4:440, B4:494, C5:523,
+        D5:587, E5:659, F5:698, G5:784
+      };
+
+      // Happy Birthday melody: [note, durationBeats]
+      var melody = [
+        [N.G4,0.75],[N.G4,0.25],[N.A4,1],[N.G4,1],[N.C5,1],[N.B4,2],
+        [N.G4,0.75],[N.G4,0.25],[N.A4,1],[N.G4,1],[N.D5,1],[N.C5,2],
+        [N.G4,0.75],[N.G4,0.25],[N.G5,1],[N.E5,1],[N.C5,0.75],[N.B4,0.25],[N.A4,2],
+        [N.F5,0.75],[N.F5,0.25],[N.E5,1],[N.C5,1],[N.D5,1],[N.C5,3]
+      ];
+
+      var BPM = 76;
+      var beat = 60 / BPM;
+      var t = ac.currentTime + 0.4; // small delay before song starts
+
+      melody.forEach(function(step) {
+        var freq = step[0], dur = step[1] * beat;
+        
+        // Main oscillator (sine + slight triangle for warmth)
+        var osc = ac.createOscillator();
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+
+        // Harmony: a fifth below
+        var osc2 = ac.createOscillator();
+        osc2.type = 'sine';
+        osc2.frequency.value = freq * 0.667; // perfect fifth below
+
+        var env = ac.createGain();
+        env.gain.setValueAtTime(0, t);
+        env.gain.linearRampToValueAtTime(1, t + 0.04); // attack
+        env.gain.setValueAtTime(1, t + dur * 0.6);
+        env.gain.linearRampToValueAtTime(0, t + dur * 0.95); // release
+
+        var env2 = ac.createGain();
+        env2.gain.setValueAtTime(0, t);
+        env2.gain.linearRampToValueAtTime(0.35, t + 0.04);
+        env2.gain.setValueAtTime(0.35, t + dur * 0.6);
+        env2.gain.linearRampToValueAtTime(0, t + dur * 0.95);
+
+        osc.connect(env);
+        env.connect(masterGain);
+        env.connect(convolver);
+
+        osc2.connect(env2);
+        env2.connect(masterGain);
+
+        osc.start(t); osc.stop(t + dur);
+        osc2.start(t); osc2.stop(t + dur);
+
+        t += dur;
+      });
+
+    } catch(e) { console.warn('Birthday song error:', e); }
+  }
+
   function updateCountdown() {
     var now = new Date().getTime();
     var distance = targetDate - now;
@@ -93,6 +182,7 @@
         if (canvas && window.CineFX.FireworkField) {
             var fw = window.CineFX.FireworkField(canvas);
             fw.burst();
+            playBirthdaySong(); // 🎵 Play Happy Birthday melody!
             var cdTitle = countdownOverlay.querySelector('h2');
             var cdSub = countdownOverlay.querySelector('p');
             if (cdTitle) cdTitle.textContent = "Happy Birthday!";
