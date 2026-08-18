@@ -242,7 +242,6 @@
     // Fireworks already seen — skip startOverlay & countdown, go directly to loader
     if (startOverlay) startOverlay.classList.add('is-hidden');
     if (countdownOverlay) countdownOverlay.style.display = 'none';
-    if (audioDock) audioDock.classList.add('is-visible');
     fakeLoad();
   } else if (startBtn && startOverlay) {
     // First visit — show startOverlay, unlock audio, then start countdown
@@ -254,7 +253,6 @@
         window.GlobalAudioContext.resume();
       }
       startOverlay.classList.add('is-hidden');
-      if (audioDock) audioDock.classList.add('is-visible');
       startCountdownInterval();
     });
   } else {
