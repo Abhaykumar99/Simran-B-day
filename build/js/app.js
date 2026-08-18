@@ -740,20 +740,6 @@
 
   // --- NEW FEATURES ---
   
-  // 1. Stars Game
-  var starsCanvas = document.getElementById('starsGameCanvas');
-  if(starsCanvas && window.CineFX && window.CineFX.StarsGame) {
-    window.CineFX.StarsGame(starsCanvas);
-  }
-
-  // 2. Secret Envelope
-  var envelope = document.getElementById('envelopeWrapper');
-  if(envelope) {
-    envelope.addEventListener('click', function() {
-      envelope.classList.add('open');
-    });
-  }
-
   // 3. Confetti on Finale
   var confettiCanvas = document.getElementById('confettiCanvas');
   var confettiField = null;
