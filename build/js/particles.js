@@ -34,12 +34,48 @@
       });
     }
     var mouse = { x: dims.w/2, y: dims.h/2 };
-    window.addEventListener('mousemove', function(e){ mouse.x = e.clientX; mouse.y = e.clientY; }, { passive:true });
+    
+    // Heart/Star trail logic
+    var touchPts = [];
+    function addTouch(x,y){
+      for(var i=0;i<3;i++){
+        touchPts.push({
+          x: x + rand(-10,10), y: y + rand(-10,10),
+          vx: rand(-1,1), vy: rand(-1.5, -0.2),
+          r: rand(1, 3), a: 1, life: 1,
+          isHeart: Math.random() > 0.5
+        });
+      }
+    }
+
+    var lastX = mouse.x, lastY = mouse.y;
+    window.addEventListener('mousemove', function(e){ 
+      mouse.x = e.clientX; mouse.y = e.clientY; 
+      var dist = Math.abs(mouse.x - lastX) + Math.abs(mouse.y - lastY);
+      if(dist > 15 && Math.random() > 0.4) {
+        addTouch(mouse.x, mouse.y);
+        lastX = mouse.x; lastY = mouse.y;
+      }
+    }, { passive:true });
+
+    window.addEventListener('touchmove', function(e){
+      var t = e.touches[0];
+      if(t) {
+        var dist = Math.abs(t.clientX - lastX) + Math.abs(t.clientY - lastY);
+        if(dist > 15 && Math.random() > 0.4) {
+          addTouch(t.clientX, t.clientY);
+          lastX = t.clientX; lastY = t.clientY;
+        }
+      }
+    }, { passive:true });
+
     window.addEventListener('resize', function(){ dims = resizeCanvas(canvas); });
 
     function tick(){
       ctx.clearRect(0,0,canvas.width,canvas.height);
       ctx.save(); ctx.scale(DPR,DPR);
+      
+      // Draw background dust
       for(var i=0;i<pts.length;i++){
         var p = pts[i];
         p.x += p.vx; p.y += p.vy; p.tw += 0.02;
@@ -55,6 +91,37 @@
         ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
         ctx.fill();
       }
+
+      // Draw interactive trails (Hearts & Stars)
+      for(var j=touchPts.length-1; j>=0; j--){
+        var tp = touchPts[j];
+        tp.x += tp.vx; tp.y += tp.vy;
+        tp.life -= 0.02;
+        if(tp.life <= 0){ touchPts.splice(j,1); continue; }
+        
+        ctx.save();
+        ctx.translate(tp.x, tp.y);
+        ctx.scale(tp.r, tp.r);
+        var alpha2 = tp.a * tp.life;
+        
+        if (tp.isHeart) {
+          ctx.fillStyle = 'rgba(255, 182, 193, ' + alpha2 + ')'; // Soft rose
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.bezierCurveTo(0, -1.5, -2.5, -1.5, -2.5, 0.5);
+          ctx.bezierCurveTo(-2.5, 2.5, 0, 4, 0, 5.5);
+          ctx.bezierCurveTo(0, 4, 2.5, 2.5, 2.5, 0.5);
+          ctx.bezierCurveTo(2.5, -1.5, 0, -1.5, 0, 0);
+          ctx.fill();
+        } else {
+          ctx.fillStyle = 'rgba(255, 219, 163, ' + alpha2 + ')'; // Gold
+          ctx.beginPath();
+          ctx.arc(0, 0, 1, 0, Math.PI*2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
       ctx.restore();
       if(!reduced) requestAnimationFrame(tick);
     }

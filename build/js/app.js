@@ -666,53 +666,7 @@
 
 })();
 
-// ==========================================
-// FEATURE 3: HEART TRAILS
-// ==========================================
-(function() {
-  var lastTrail = 0;
-  var trailDelay = 60; // ms between hearts
 
-  function createHeart(x, y) {
-    var now = Date.now();
-    if (now - lastTrail < trailDelay) return;
-    lastTrail = now;
-
-    var heart = document.createElement('div');
-    heart.className = 'trail-heart';
-    // Randomize between a few emojis
-    var emojis = ['&#10024;', '&#10024;', '&#9829;', '&#10024;']; 
-    heart.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
-    
-    // random scatter
-    var rx = (Math.random() - 0.5) * 20;
-    var ry = (Math.random() - 0.5) * 20;
-    heart.style.left = (x + rx) + 'px';
-    heart.style.top = (y + ry) + 'px';
-    
-    var colors = ['var(--rose)', 'var(--gold-soft)', '#fff'];
-    heart.style.color = colors[Math.floor(Math.random() * colors.length)];
-    
-    var size = Math.random() * 8 + 12;
-    heart.style.fontSize = size + 'px';
-
-    document.body.appendChild(heart);
-    
-    setTimeout(function() {
-      if (heart.parentNode) heart.parentNode.removeChild(heart);
-    }, 1000);
-  }
-
-  window.addEventListener('mousemove', function(e) {
-    createHeart(e.clientX, e.clientY);
-  });
-
-  window.addEventListener('touchmove', function(e) {
-    if (e.touches.length > 0) {
-      createHeart(e.touches[0].clientX, e.touches[0].clientY);
-    }
-  }, {passive: true});
-})();
 
 // ==========================================
 // FEATURE 2: MICROPHONE BLOWING LOGIC
