@@ -55,7 +55,7 @@
     fireworksAlreadySeen = false;
   }
 
-  var targetDate = new Date('2026-08-19T00:26:00+05:30').getTime(); // 19 Aug 12:26 AM
+  var targetDate = new Date('2026-08-21T00:00:00+05:30').getTime(); // 21 Aug 12:00 AM (Midnight)
   var countdownOverlay = document.getElementById('countdownOverlay');
   var cdDays = document.getElementById('cd-days');
   var cdHours = document.getElementById('cd-hours');
