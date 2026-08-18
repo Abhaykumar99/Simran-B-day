@@ -39,16 +39,20 @@
     var touchPts = [];
     function addTouch(x,y){
       for(var i=0;i<4;i++){
-        var isHeart = Math.random() > 0.6;
+        var randType = Math.random();
+        var pType = 'dot';
+        if (randType > 0.7) pType = 'heart';
+        else if (randType > 0.4) pType = 'sparkle';
+        
         touchPts.push({
           x: x + rand(-15,15), y: y + rand(-15,15),
           vx: rand(-1.2, 1.2), vy: rand(-3.5, -0.5),
-          r: isHeart ? rand(1.5, 4.5) : rand(1, 2.5), 
+          r: pType === 'heart' ? rand(1.5, 4.5) : rand(1.5, 3.5), 
           a: 1, life: 1,
           rot: rand(0, Math.PI*2),
           vRot: rand(-0.08, 0.08),
-          isHeart: isHeart,
-          color: isHeart ? 'rgba(255, 105, 180, ' : 'rgba(255, 219, 163, '
+          type: pType,
+          color: pType === 'heart' ? 'rgba(255, 219, 163, ' : (pType === 'sparkle' ? 'rgba(255, 255, 255, ' : 'rgba(255, 219, 163, ')
         });
       }
     }
@@ -97,7 +101,7 @@
         ctx.fill();
       }
 
-      // Draw interactive trails (Hearts & Stars)
+      // Draw interactive trails (Hearts, Sparkles & Stars)
       for(var j=touchPts.length-1; j>=0; j--){
         var tp = touchPts[j];
         tp.x += tp.vx; tp.y += tp.vy;
@@ -113,8 +117,8 @@
         
         ctx.shadowBlur = 15;
         
-        if (tp.isHeart) {
-          ctx.shadowColor = 'rgba(255,105,180,0.6)';
+        if (tp.type === 'heart') {
+          ctx.shadowColor = 'rgba(255,219,163,0.8)';
           ctx.fillStyle = tp.color + alpha2 + ')';
           ctx.beginPath();
           ctx.moveTo(0, 0);
@@ -122,6 +126,16 @@
           ctx.bezierCurveTo(-2.5, 2.5, 0, 4, 0, 5.5);
           ctx.bezierCurveTo(0, 4, 2.5, 2.5, 2.5, 0.5);
           ctx.bezierCurveTo(2.5, -1.5, 0, -1.5, 0, 0);
+          ctx.fill();
+        } else if (tp.type === 'sparkle') {
+          ctx.shadowColor = 'rgba(255,255,255,0.8)';
+          ctx.fillStyle = tp.color + alpha2 + ')';
+          ctx.beginPath();
+          ctx.moveTo(0, -2);
+          ctx.quadraticCurveTo(0, 0, 2, 0);
+          ctx.quadraticCurveTo(0, 0, 0, 2);
+          ctx.quadraticCurveTo(0, 0, -2, 0);
+          ctx.quadraticCurveTo(0, 0, 0, -2);
           ctx.fill();
         } else {
           ctx.shadowColor = 'rgba(255,219,163,0.8)';
