@@ -183,20 +183,22 @@
             fw.burst();
             var cdTitle = countdownOverlay.querySelector('h2');
             var cdSub = countdownOverlay.querySelector('p');
-            if (cdTitle) cdTitle.textContent = "Happy Birthday!";
-            if (cdSub) cdSub.textContent = "The wait is over.";
+            if (cdTitle) cdTitle.style.display = 'none';
+            if (cdSub) cdSub.style.display = 'none';
             
             if (cdDays) cdDays.textContent = "00";
             if (cdHours) cdHours.textContent = "00";
             if (cdMins) cdMins.textContent = "00";
             if (cdSecs) cdSecs.textContent = "00";
 
+            // Start loader immediately!
+            fakeLoad();
+
             setTimeout(function() {
                 // Mark fireworks as seen so they don't repeat
                 localStorage.setItem('sb_fireworks_seen', '1');
                 countdownOverlay.classList.add('is-hidden');
-                fakeLoad();
-            }, 6500); // Wait 6.5s to let the full 5s premium firework show finish its trails
+            }, 5500); // Wait for fireworks to finish
             return false;
         } else {
             countdownOverlay.classList.add('is-hidden');
