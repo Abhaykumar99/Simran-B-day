@@ -248,19 +248,42 @@ main{ position:relative; z-index:2; }
 .open-especially{ font-family:var(--serif); font-style:italic; font-size:18px; color:var(--gold-soft); margin-top:6px; opacity:0; }
 .open-especially.in{ opacity:.9; }
 
-.name-reveal{
-  display:flex; margin-top:22px;
-  font-family:var(--serif); font-weight:500; font-size:clamp(46px,11vw,110px);
-  letter-spacing:.01em;
+.name-reveal-svg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  height: 120px;
+  margin-top: 22px;
 }
-.name-reveal span{
-  display:inline-block; opacity:0; transform:translateY(40px) rotateX(-40deg);
-  transform-origin:bottom;
-  transition:opacity .9s var(--ease-soft), transform .9s var(--ease-soft);
-  background:linear-gradient(180deg, var(--gold-soft), var(--gold) 55%, var(--rose));
-  -webkit-background-clip:text; background-clip:text; color:transparent;
+.name-reveal-svg svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
-.name-reveal span.in{ opacity:1; transform:translateY(0) rotateX(0); }
+.name-reveal-svg text {
+  font-family: 'Great Vibes', cursive;
+  font-size: 140px;
+  fill: transparent;
+  stroke: var(--c-accent);
+  stroke-width: 2px;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  filter: drop-shadow(0 0 10px rgba(230,174,107,0));
+}
+.name-reveal-svg.in text {
+  animation: svgDraw 3.5s ease-in-out forwards, svgFill 2s ease-in-out forwards 2s;
+}
+
+@keyframes svgDraw {
+  0% { stroke-dashoffset: 1000; }
+  100% { stroke-dashoffset: 0; }
+}
+@keyframes svgFill {
+  0% { fill: transparent; filter: drop-shadow(0 0 10px rgba(230,174,107,0)); }
+  100% { fill: var(--c-accent); filter: drop-shadow(0 0 15px rgba(230,174,107,0.4)); }
+}
 
 .date-reveal{
   position:relative; margin-top:30px;
@@ -776,3 +799,21 @@ body[data-scene="06"] .thread span { background: linear-gradient(90deg, var(--go
 
 /* Parallax tilt on section headings */
 .hero-title { transition: transform .08s ease-out; will-change: transform; }
+
+.trail-heart { position: fixed; pointer-events: none; z-index: 9999; font-size: 16px; color: var(--rose); animation: heartTrail 1s ease-out forwards; transform: translate(-50%, -50%); }
+@keyframes heartTrail { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -150%) scale(0.5); } }
+
+.scene--wishes { min-height: 100vh; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.wishes-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+.wish-card { position: absolute; bottom: -200px; padding: 20px 30px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(230, 174, 107, 0.15); border-radius: 16px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: var(--gold-soft); font-family: var(--serif); font-style: italic; max-width: 300px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: floatUp 15s linear infinite; opacity: 0; }
+.wish-card p { font-size: 18px; margin-bottom: 10px; line-height: 1.4; }
+.wish-card span { font-size: 14px; font-family: var(--sans); font-style: normal; letter-spacing: 0.1em; color: var(--rose); text-transform: uppercase; }
+@keyframes floatUp { 0% { bottom: -200px; opacity: 0; transform: translateX(0) rotate(-2deg); } 10% { opacity: 1; } 90% { opacity: 1; } 100% { bottom: 120vh; opacity: 0; transform: translateX(30px) rotate(2deg); } }
+
+/* Premium Polaroid Hover Effects */
+@media (hover: hover) {
+  .g-card { transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); }
+  .g-card:hover { transform: scale(1.05) rotate(2deg) translateY(-10px) perspective(1000px) rotateX(5deg) rotateY(5deg) !important; box-shadow: -15px 25px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(240,178,92,0.4); z-index: 10; }
+  .g-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 60%); opacity: 0; transition: opacity 0.5s; pointer-events: none; border-radius: 4px; }
+  .g-card:hover::after { opacity: 1; }
+}

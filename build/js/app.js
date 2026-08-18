@@ -303,11 +303,11 @@
     var especially = document.querySelector('.open-especially');
     setTimeout(function(){ especially.classList.add('in'); }, 500 + 2*650);
 
-    var letters = document.querySelectorAll('.name-reveal span');
-    letters.forEach(function(el, i){
-      setTimeout(function(){ el.classList.add('in'); }, 2200 + i*90);
-    });
-    var nameEnd = 2200 + letters.length*90;
+    var svgWrap = document.querySelector('.name-reveal-svg');
+    if (svgWrap) {
+      setTimeout(function(){ svgWrap.classList.add('in'); }, 2200);
+    }
+    var nameEnd = 2200 + 1000; // wait for SVG animation to start before next elements
 
     // Date reveal: "21" scales+blurs in, then "AUGUST" letters stagger
     var dateReveal = document.getElementById('dateReveal');
@@ -664,4 +664,123 @@
     } catch(e) { console.warn('Wish audio error:', e); }
   }
 
+})();
+
+// ==========================================
+// FEATURE 3: HEART TRAILS
+// ==========================================
+(function() {
+  var lastTrail = 0;
+  var trailDelay = 60; // ms between hearts
+
+  function createHeart(x, y) {
+    var now = Date.now();
+    if (now - lastTrail < trailDelay) return;
+    lastTrail = now;
+
+    var heart = document.createElement('div');
+    heart.className = 'trail-heart';
+    // Randomize between a few emojis
+    var emojis = ['&#10024;', '&#10024;', '&#9829;', '&#10024;']; 
+    heart.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+    
+    // random scatter
+    var rx = (Math.random() - 0.5) * 20;
+    var ry = (Math.random() - 0.5) * 20;
+    heart.style.left = (x + rx) + 'px';
+    heart.style.top = (y + ry) + 'px';
+    
+    var colors = ['var(--rose)', 'var(--gold-soft)', '#fff'];
+    heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+    
+    var size = Math.random() * 8 + 12;
+    heart.style.fontSize = size + 'px';
+
+    document.body.appendChild(heart);
+    
+    setTimeout(function() {
+      if (heart.parentNode) heart.parentNode.removeChild(heart);
+    }, 1000);
+  }
+
+  window.addEventListener('mousemove', function(e) {
+    createHeart(e.clientX, e.clientY);
+  });
+
+  window.addEventListener('touchmove', function(e) {
+    if (e.touches.length > 0) {
+      createHeart(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, {passive: true});
+})();
+
+// ==========================================
+// FEATURE 2: MICROPHONE BLOWING LOGIC
+// ==========================================
+(function() {
+  var cakeSection = document.getElementById('s-cake');
+  if(!cakeSection) return;
+  
+  var micEnabled = false;
+  
+  function initMic() {
+    if(micEnabled || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+      micEnabled = true;
+      var ac = window.AudioContext || window.webkitAudioContext;
+      var audioCtx = new ac();
+      var analyser = audioCtx.createAnalyser();
+      var microphone = audioCtx.createMediaStreamSource(stream);
+      // Use createScriptProcessor (deprecated but highly compatible)
+      var javascriptNode = audioCtx.createScriptProcessor(2048, 1, 1);
+
+      analyser.smoothingTimeConstant = 0.8;
+      analyser.fftSize = 1024;
+
+      microphone.connect(analyser);
+      analyser.connect(javascriptNode);
+      javascriptNode.connect(audioCtx.destination);
+      
+      var blowCounter = 0;
+      javascriptNode.onaudioprocess = function() {
+        var array = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(array);
+        var values = 0;
+        var length = array.length;
+        for (var i = 0; i < length; i++) {
+          values += (array[i]);
+        }
+        var average = values / length;
+        
+        // Threshold for blowing sound
+        if (average > 45) { 
+          blowCounter++;
+          if (blowCounter > 5) { // Ensure it's a continuous sound, not just a tap
+            var litCandles = document.querySelectorAll('.candle[data-lit="true"]');
+            if(litCandles.length > 0) {
+              // Blow out one candle at a time randomly
+              var randomCandle = litCandles[Math.floor(Math.random() * litCandles.length)];
+              randomCandle.click();
+              blowCounter = 0; // reset
+            } else {
+              // All candles out, stop processing
+              javascriptNode.disconnect();
+              microphone.disconnect();
+            }
+          }
+        } else {
+          blowCounter = 0;
+        }
+      }
+    }).catch(function(err) {
+      console.log('Mic access denied or not supported', err);
+    });
+  }
+
+  var observer = new IntersectionObserver(function(entries) {
+    if(entries[0].isIntersecting) {
+      initMic();
+    }
+  }, { threshold: 0.5 });
+  observer.observe(cakeSection);
 })();
