@@ -182,7 +182,6 @@
         if (canvas && window.CineFX.FireworkField) {
             var fw = window.CineFX.FireworkField(canvas);
             fw.burst();
-            playBirthdaySong(); // 🎵 Play Happy Birthday melody!
             var cdTitle = countdownOverlay.querySelector('h2');
             var cdSub = countdownOverlay.querySelector('p');
             if (cdTitle) cdTitle.textContent = "Happy Birthday!";
@@ -621,6 +620,11 @@
           // Give "Simran / 21 August" a clear moment on screen before the burst.
           finaleTimeouts.push(setTimeout(function(){ finaleField.burstFireworks(); }, 3200));
           finaleTimeouts.push(setTimeout(function(){ launchConfetti(document.getElementById('s-finale')); }, 3400));
+          // 🎵 Play Happy Birthday melody + voice wish when finale loads
+          finaleTimeouts.push(setTimeout(function(){
+            playBirthdaySong();
+            speakBirthdayWish();
+          }, 800));
         }
       } else {
         if(finaleTriggered){
@@ -642,5 +646,35 @@
     url.searchParams.set('replay', '1');
     window.location.href = url.toString();
   });
+
+  /* ---------------------------------------------------------------------
+     SPEAK BIRTHDAY WISH — Web Speech API with Simran's name
+     --------------------------------------------------------------------- */
+  function speakBirthdayWish() {
+    try {
+      if (!window.speechSynthesis) return;
+      window.speechSynthesis.cancel(); // clear queue
+      var utterance = new SpeechSynthesisUtterance(
+        'Happy Birthday Simran! Wishing you a wonderful, beautiful, and joyful birthday. May all your dreams come true. You deserve the very best. We love you Simran!'
+      );
+      utterance.rate = 0.88;
+      utterance.pitch = 1.1;
+      utterance.volume = 0.9;
+      // Prefer a female voice if available
+      var voices = window.speechSynthesis.getVoices();
+      var femaleVoice = voices.find(function(v){
+        return v.name.toLowerCase().includes('female') ||
+               v.name.toLowerCase().includes('samantha') ||
+               v.name.toLowerCase().includes('zira') ||
+               v.name.toLowerCase().includes('google uk english female') ||
+               (v.lang === 'en-US' && v.name.toLowerCase().includes('google'));
+      });
+      if (femaleVoice) utterance.voice = femaleVoice;
+      // Delay slightly so melody starts first
+      setTimeout(function(){
+        window.speechSynthesis.speak(utterance);
+      }, 1200);
+    } catch(e) { console.warn('Speech error:', e); }
+  }
 
 })();
