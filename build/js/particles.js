@@ -34,40 +34,8 @@
       });
     }
     var mouse = { x: dims.w/2, y: dims.h/2 };
-    window.addEventListener('mousemove', function(e){ mouse.x = e.clientX; mouse.y = e.clientY; }, { passive:true });
-    window.addEventListener('resize', function(){ dims = resizeCanvas(canvas); });
-
-    function tick(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      ctx.save(); ctx.scale(DPR,DPR);
-      
-      for(var i=0;i<pts.length;i++){
-        var p = pts[i];
-        p.x += p.vx; p.y += p.vy; p.tw += 0.02;
-        var dx = mouse.x - p.x, dy = mouse.y - p.y;
-        var dist = Math.sqrt(dx*dx+dy*dy);
-        if(dist < 140){ p.x -= dx/dist*0.4; p.y -= dy/dist*0.4; }
-        if(p.y < -10) p.y = dims.h + 10;
-        if(p.x < -10) p.x = dims.w + 10;
-        if(p.x > dims.w+10) p.x = -10;
-        var alpha = p.a * (0.6 + 0.4*Math.sin(p.tw));
-        ctx.beginPath();
-        ctx.fillStyle = 'rgba(240,178,92,'+alpha+')';
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-        ctx.fill();
-      }
-      ctx.restore();
-      if(!reduced) requestAnimationFrame(tick);
-    }
-    tick();
-  }
-
-  /* ---------------- Interactive Trails (Hearts & Sparkles) ---------------- */
-  function TrailField(canvas){
-    var ctx = canvas.getContext('2d');
-    var dims = resizeCanvas(canvas);
-    var mouse = { x: dims.w/2, y: dims.h/2 };
     
+    // Heart/Star trail logic
     var touchPts = [];
     function addTouch(x,y){
       for(var i=0;i<4;i++){
@@ -116,6 +84,24 @@
       ctx.clearRect(0,0,canvas.width,canvas.height);
       ctx.save(); ctx.scale(DPR,DPR);
       
+      // Draw background dust
+      for(var i=0;i<pts.length;i++){
+        var p = pts[i];
+        p.x += p.vx; p.y += p.vy; p.tw += 0.02;
+        var dx = mouse.x - p.x, dy = mouse.y - p.y;
+        var dist = Math.sqrt(dx*dx+dy*dy);
+        if(dist < 140){ p.x -= dx/dist*0.4; p.y -= dy/dist*0.4; }
+        if(p.y < -10) p.y = dims.h + 10;
+        if(p.x < -10) p.x = dims.w + 10;
+        if(p.x > dims.w+10) p.x = -10;
+        var alpha = p.a * (0.6 + 0.4*Math.sin(p.tw));
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(240,178,92,'+alpha+')';
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fill();
+      }
+
+      // Draw interactive trails (Hearts, Sparkles & Stars)
       for(var j=touchPts.length-1; j>=0; j--){
         var tp = touchPts[j];
         tp.x += tp.vx; tp.y += tp.vy;
@@ -493,7 +479,6 @@
 
   window.CineFX = {
     AmbientField: AmbientField,
-    TrailField: TrailField,
     OpenField: OpenField,
     SmokeField: SmokeField,
     FinaleField: FinaleField,

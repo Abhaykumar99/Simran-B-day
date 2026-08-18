@@ -183,22 +183,20 @@
             fw.burst();
             var cdTitle = countdownOverlay.querySelector('h2');
             var cdSub = countdownOverlay.querySelector('p');
-            if (cdTitle) cdTitle.style.display = 'none';
-            if (cdSub) cdSub.style.display = 'none';
+            if (cdTitle) cdTitle.textContent = "Happy Birthday!";
+            if (cdSub) cdSub.textContent = "The wait is over.";
             
             if (cdDays) cdDays.textContent = "00";
             if (cdHours) cdHours.textContent = "00";
             if (cdMins) cdMins.textContent = "00";
             if (cdSecs) cdSecs.textContent = "00";
 
-            // Start loader immediately!
-            fakeLoad();
-
             setTimeout(function() {
                 // Mark fireworks as seen so they don't repeat
                 localStorage.setItem('sb_fireworks_seen', '1');
                 countdownOverlay.classList.add('is-hidden');
-            }, 5500); // Wait for fireworks to finish
+                fakeLoad();
+            }, 6500); // Wait 6.5s to let the full 5s premium firework show finish its trails
             return false;
         } else {
             countdownOverlay.classList.add('is-hidden');
@@ -263,25 +261,10 @@
   /* ---------------------------------------------------------------------
      AMBIENT + OPEN CANVAS FIELDS
      --------------------------------------------------------------------- */
-    var bgCanvas = document.getElementById('bgCanvas');
-    window.CineFX.AmbientField(bgCanvas);
-    var trailCanvas = document.getElementById('trailCanvas');
-    if (trailCanvas && window.CineFX.TrailField) {
-      window.CineFX.TrailField(trailCanvas);
-    }
-    var openCanvas = document.getElementById('openCanvas');
-    var openField = window.CineFX.OpenField(openCanvas);
-    
-    var scroller = document.getElementById('scroller');
-    if (scroller && trailCanvas) {
-      scroller.addEventListener('scroll', function() {
-        if (scroller.scrollTop > window.innerHeight * 0.5) {
-          trailCanvas.style.opacity = 1;
-        } else {
-          trailCanvas.style.opacity = 0;
-        }
-      }, { passive: true });
-    }
+  var bgCanvas = document.getElementById('bgCanvas');
+  window.CineFX.AmbientField(bgCanvas);
+  var openCanvas = document.getElementById('openCanvas');
+  var openField = window.CineFX.OpenField(openCanvas);
 
   /* ---------------------------------------------------------------------
      CUSTOM CURSOR

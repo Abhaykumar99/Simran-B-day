@@ -103,11 +103,10 @@ p{ margin:0; }
    COUNTDOWN
    ========================================================================== */
 .countdown-overlay {
-  position: fixed; inset: 0; z-index: 10001; /* Above loader */
-  background: transparent;
+  position: fixed; inset: 0; z-index: 10000;
+  background: var(--void);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   color: var(--ink); text-align: center;
-  pointer-events: none;
   transition: opacity 1s var(--ease), visibility 1s;
 }
 .countdown-overlay.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
@@ -249,20 +248,24 @@ main{ position:relative; z-index:2; }
 .name-reveal{
   display:flex; margin-top:22px;
   font-family:var(--serif); font-weight:500; font-size:clamp(46px,11vw,110px);
-  letter-spacing:.01em; z-index:5;
+  letter-spacing:.01em;
 }
 .name-reveal span{
   display:inline-block; opacity:0; transform:translateY(40px) rotateX(-40deg);
   transform-origin:bottom;
   transition:opacity .9s var(--ease-soft), transform .9s var(--ease-soft), text-shadow 1.5s ease;
-  background:linear-gradient(180deg, var(--gold-soft), var(--gold) 55%, var(--rose));
+  background:linear-gradient(90deg, var(--gold-soft), #fff, var(--gold), var(--rose), var(--gold-soft));
+  background-size: 300% auto;
   -webkit-background-clip:text; background-clip:text; color:transparent;
 }
 .name-reveal span.in{ 
   opacity:1; 
   transform:translateY(0) rotateX(0); 
   text-shadow: 0 0 20px rgba(240,178,92,0.6), 0 0 40px rgba(240,178,92,0.2);
+  animation: shine 4s linear infinite;
 }
+@keyframes shine {
+  to { background-position: 300% center; }
 }
 
 .date-reveal{
