@@ -261,10 +261,25 @@
   /* ---------------------------------------------------------------------
      AMBIENT + OPEN CANVAS FIELDS
      --------------------------------------------------------------------- */
-  var bgCanvas = document.getElementById('bgCanvas');
-  window.CineFX.AmbientField(bgCanvas);
-  var openCanvas = document.getElementById('openCanvas');
-  var openField = window.CineFX.OpenField(openCanvas);
+    var bgCanvas = document.getElementById('bgCanvas');
+    window.CineFX.AmbientField(bgCanvas);
+    var trailCanvas = document.getElementById('trailCanvas');
+    if (trailCanvas && window.CineFX.TrailField) {
+      window.CineFX.TrailField(trailCanvas);
+    }
+    var openCanvas = document.getElementById('openCanvas');
+    var openField = window.CineFX.OpenField(openCanvas);
+    
+    var scroller = document.getElementById('scroller');
+    if (scroller && trailCanvas) {
+      scroller.addEventListener('scroll', function() {
+        if (scroller.scrollTop > window.innerHeight * 0.5) {
+          trailCanvas.style.opacity = 1;
+        } else {
+          trailCanvas.style.opacity = 0;
+        }
+      }, { passive: true });
+    }
 
   /* ---------------------------------------------------------------------
      CUSTOM CURSOR
