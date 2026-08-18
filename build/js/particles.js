@@ -38,12 +38,17 @@
     // Heart/Star trail logic
     var touchPts = [];
     function addTouch(x,y){
-      for(var i=0;i<3;i++){
+      for(var i=0;i<4;i++){
+        var isHeart = Math.random() > 0.6;
         touchPts.push({
-          x: x + rand(-10,10), y: y + rand(-10,10),
-          vx: rand(-1,1), vy: rand(-1.5, -0.2),
-          r: rand(1, 3), a: 1, life: 1,
-          isHeart: Math.random() > 0.5
+          x: x + rand(-15,15), y: y + rand(-15,15),
+          vx: rand(-1.2, 1.2), vy: rand(-3.5, -0.5),
+          r: isHeart ? rand(1.5, 4.5) : rand(1, 2.5), 
+          a: 1, life: 1,
+          rot: rand(0, Math.PI*2),
+          vRot: rand(-0.08, 0.08),
+          isHeart: isHeart,
+          color: isHeart ? 'rgba(255, 105, 180, ' : 'rgba(255, 219, 163, '
         });
       }
     }
@@ -52,7 +57,7 @@
     window.addEventListener('mousemove', function(e){ 
       mouse.x = e.clientX; mouse.y = e.clientY; 
       var dist = Math.abs(mouse.x - lastX) + Math.abs(mouse.y - lastY);
-      if(dist > 15 && Math.random() > 0.4) {
+      if(dist > 10) {
         addTouch(mouse.x, mouse.y);
         lastX = mouse.x; lastY = mouse.y;
       }
@@ -62,7 +67,7 @@
       var t = e.touches[0];
       if(t) {
         var dist = Math.abs(t.clientX - lastX) + Math.abs(t.clientY - lastY);
-        if(dist > 15 && Math.random() > 0.4) {
+        if(dist > 10) {
           addTouch(t.clientX, t.clientY);
           lastX = t.clientX; lastY = t.clientY;
         }
@@ -96,16 +101,21 @@
       for(var j=touchPts.length-1; j>=0; j--){
         var tp = touchPts[j];
         tp.x += tp.vx; tp.y += tp.vy;
-        tp.life -= 0.02;
+        tp.rot += tp.vRot;
+        tp.life -= 0.015;
         if(tp.life <= 0){ touchPts.splice(j,1); continue; }
         
         ctx.save();
         ctx.translate(tp.x, tp.y);
+        ctx.rotate(tp.rot);
         ctx.scale(tp.r, tp.r);
         var alpha2 = tp.a * tp.life;
         
+        ctx.shadowBlur = 15;
+        
         if (tp.isHeart) {
-          ctx.fillStyle = 'rgba(255, 182, 193, ' + alpha2 + ')'; // Soft rose
+          ctx.shadowColor = 'rgba(255,105,180,0.6)';
+          ctx.fillStyle = tp.color + alpha2 + ')';
           ctx.beginPath();
           ctx.moveTo(0, 0);
           ctx.bezierCurveTo(0, -1.5, -2.5, -1.5, -2.5, 0.5);
@@ -114,7 +124,8 @@
           ctx.bezierCurveTo(2.5, -1.5, 0, -1.5, 0, 0);
           ctx.fill();
         } else {
-          ctx.fillStyle = 'rgba(255, 219, 163, ' + alpha2 + ')'; // Gold
+          ctx.shadowColor = 'rgba(255,219,163,0.8)';
+          ctx.fillStyle = tp.color + alpha2 + ')';
           ctx.beginPath();
           ctx.arc(0, 0, 1, 0, Math.PI*2);
           ctx.fill();

@@ -254,13 +254,18 @@ main{ position:relative; z-index:2; }
   display:inline-block; opacity:0; transform:translateY(40px) rotateX(-40deg);
   transform-origin:bottom;
   transition:opacity .9s var(--ease-soft), transform .9s var(--ease-soft), text-shadow 1.5s ease;
-  background:linear-gradient(180deg, var(--gold-soft), var(--gold) 55%, var(--rose));
+  background:linear-gradient(90deg, var(--gold-soft), #fff, var(--gold), var(--rose), var(--gold-soft));
+  background-size: 300% auto;
   -webkit-background-clip:text; background-clip:text; color:transparent;
 }
 .name-reveal span.in{ 
   opacity:1; 
   transform:translateY(0) rotateX(0); 
   text-shadow: 0 0 20px rgba(240,178,92,0.6), 0 0 40px rgba(240,178,92,0.2);
+  animation: shine 4s linear infinite;
+}
+@keyframes shine {
+  to { background-position: 300% center; }
 }
 
 .date-reveal{
@@ -795,3 +800,5 @@ body[data-scene="06"] .thread span { background: linear-gradient(90deg, var(--go
   .g-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 60%); opacity: 0; transition: opacity 0.5s; pointer-events: none; border-radius: 4px; }
   .g-card:hover::after { opacity: 1; }
 }
+
+#bgCanvas { mix-blend-mode: color-dodge; opacity: 0.8; }
