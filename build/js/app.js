@@ -648,33 +648,57 @@
   });
 
   /* ---------------------------------------------------------------------
-     SPEAK BIRTHDAY WISH — Web Speech API with Simran's name
+     SPEAK BIRTHDAY WISH — ResponsiveVoice warm human-like voice
      --------------------------------------------------------------------- */
   function speakBirthdayWish() {
     try {
-      if (!window.speechSynthesis) return;
-      window.speechSynthesis.cancel(); // clear queue
-      var utterance = new SpeechSynthesisUtterance(
-        'Happy Birthday Simran! Wishing you a wonderful, beautiful, and joyful birthday. May all your dreams come true. You deserve the very best. We love you Simran!'
-      );
-      utterance.rate = 0.88;
-      utterance.pitch = 1.1;
-      utterance.volume = 0.9;
-      // Prefer a female voice if available
-      var voices = window.speechSynthesis.getVoices();
-      var femaleVoice = voices.find(function(v){
-        return v.name.toLowerCase().includes('female') ||
-               v.name.toLowerCase().includes('samantha') ||
-               v.name.toLowerCase().includes('zira') ||
-               v.name.toLowerCase().includes('google uk english female') ||
-               (v.lang === 'en-US' && v.name.toLowerCase().includes('google'));
-      });
-      if (femaleVoice) utterance.voice = femaleVoice;
-      // Delay slightly so melody starts first
-      setTimeout(function(){
-        window.speechSynthesis.speak(utterance);
-      }, 1200);
+      // Delay slightly so melody starts first, then the warm voice speaks
+      setTimeout(function() {
+        var wishText = 
+          "Simran..." +
+          " Today is your day." +
+          " And we just wanted to take a moment... to tell you how truly special you are." +
+          " You light up every room you walk into." +
+          " Your smile, your laugh, your energy — it all makes everything better." +
+          " On this beautiful day, we are so grateful to have you in our lives." +
+          " May this year bring you everything your heart desires." +
+          " All the love, all the joy, all the happiness you so deeply deserve." +
+          " Happy Birthday, Simran." +
+          " We love you so much.";
+
+        if (window.responsiveVoice && window.responsiveVoice.voiceSupport()) {
+          window.responsiveVoice.speak(wishText, 'UK English Female', {
+            pitch: 1.0,
+            rate: 0.82,   // slow, warm pace — like someone speaking from the heart
+            volume: 0.92,
+            onstart: function() { console.log('Birthday wish started'); },
+            onerror: function() {
+              // Fallback to browser TTS if ResponsiveVoice fails
+              fallbackSpeak(wishText);
+            }
+          });
+        } else {
+          fallbackSpeak(wishText);
+        }
+      }, 1800); // Start after melody has been playing for 1.8 seconds
     } catch(e) { console.warn('Speech error:', e); }
+  }
+
+  function fallbackSpeak(text) {
+    try {
+      if (!window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.82; u.pitch = 1.1; u.volume = 0.9;
+      var voices = window.speechSynthesis.getVoices();
+      var best = voices.find(function(v){
+        return v.name.toLowerCase().includes('samantha') ||
+               v.name.toLowerCase().includes('female') ||
+               v.name.toLowerCase().includes('zira');
+      });
+      if (best) u.voice = best;
+      window.speechSynthesis.speak(u);
+    } catch(e) {}
   }
 
 })();
