@@ -89,6 +89,43 @@
       }
     }, { passive:true });
 
+    // Double tap/click logic for heart burst
+    function burstHearts(x,y){
+      var count = isMobile ? 30 : 60;
+      for(var i=0;i<count;i++){
+        var randType = Math.random();
+        var pType = 'dot';
+        if (randType > 0.6) pType = 'heart';
+        else if (randType > 0.3) pType = 'sparkle';
+        
+        var angle = rand(0, Math.PI*2);
+        var speed = rand(2, 9);
+        touchPts.push({
+          x: x, y: y,
+          vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed - 1, // slight upward bias
+          r: pType === 'heart' ? rand(2, 6) : rand(1.5, 4), 
+          a: 1, life: 1,
+          rot: rand(0, Math.PI*2),
+          vRot: rand(-0.15, 0.15),
+          type: pType,
+          color: pType === 'heart' ? 'rgba(255, 182, 193, ' : (pType === 'sparkle' ? 'rgba(255, 255, 255, ' : 'rgba(255, 219, 163, ')
+        });
+      }
+    }
+
+    window.addEventListener('dblclick', function(e){
+      burstHearts(e.clientX, e.clientY);
+    });
+
+    var lastTapTime = 0;
+    window.addEventListener('touchstart', function(e){
+      var now = Date.now();
+      if(now - lastTapTime < 300 && e.touches.length > 0){
+        burstHearts(e.touches[0].clientX, e.touches[0].clientY);
+      }
+      lastTapTime = now;
+    }, { passive: true });
+
     window.addEventListener('resize', function(){ dims = resizeCanvas(canvas); });
 
     function tick(){
