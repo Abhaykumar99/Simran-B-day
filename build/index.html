@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Happy Birthday, Simran</title>
+<meta name="description" content="A cinematic birthday experience made for Simran" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0a0512" />
+<link rel="icon" href="images/others/favicon.ico" type="image/x-icon" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Sora:wght@300;400;500;600;700&family=Dancing+Script:wght@400..700&family=Great+Vibes&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body style="overflow: hidden;">
+
+<!-- ============ START OVERLAY (Audio Unlock) ============ -->
+<div id="startOverlay" class="start-overlay">
+  <div class="start-content">
+    <h2>A Special Gift</h2>
+    <p>Please turn on your sound for the best experience.</p>
+    <button id="startBtn" class="start-btn">Unwrap Experience</button>
+  </div>
+</div>
+
+<!-- ============ COUNTDOWN OVERLAY ============ -->
+<div id="countdownOverlay" class="countdown-overlay" style="display: none;">
+  <canvas id="countdownCanvas" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;"></canvas>
+  <div class="countdown-content" style="position: relative; z-index: 2;">
+    <h2>Almost there...</h2>
+    <p>The celebration begins in</p>
+    <div class="countdown-timer" id="countdownTimer">
+      <div class="time-box"><span id="cd-days">00</span><small>Days</small></div>
+      <div class="time-box"><span id="cd-hours">00</span><small>Hours</small></div>
+      <div class="time-box"><span id="cd-mins">00</span><small>Minutes</small></div>
+      <div class="time-box"><span id="cd-secs">00</span><small>Seconds</small></div>
+    </div>
+  </div>
+</div>
+<!-- ============ LOADER ============ -->
+<div class="loader" id="loader">
+  <div class="loader-flame"><span></span></div>
+  <div class="loader-count"><span id="loaderNum">00</span><i>/</i>100</div>
+  <p class="loader-label">lighting the candles</p>
+</div>
+
+<!-- Film grain overlay -->
+<div class="film-grain" aria-hidden="true"></div>
+
+<!-- Ambient full-page particle canvas -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- Custom cursor (desktop only) -->
+<div class="cursor" id="cursor" aria-hidden="true">
+  <span class="cursor-dot"></span>
+  <span class="cursor-ring"></span>
+  <span class="cursor-label" id="cursorLabel"></span>
+</div>
+
+<!-- Scroll progress thread -->
+<div class="thread" aria-hidden="true"><span id="threadFill"></span></div>
+
+<!-- Floating music dock -->
+<div class="audio-dock" id="audioDock">
+  <button id="audioToggle" class="audio-btn" aria-label="Play music">
+    <span class="audio-ring"></span>
+    <svg class="ic-play" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7L8 5Z" fill="currentColor"/></svg>
+    <svg class="ic-pause" viewBox="0 0 24 24" fill="none"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></svg>
+  </button>
+  <div class="audio-wave" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+</div>
+<audio id="bgAudio" loop preload="none">
+  <source src="audio/hbd.mp3" type="audio/mpeg">
+</audio>
+
+<main id="scroller">
+
+  <!-- ============ SCENE 00 — OPENING ============ -->
+  <section class="scene" id="s-open">
+    <div class="open-vignette"></div>
+    <canvas id="openCanvas"></canvas>
+    <div class="open-content">
+      <p class="kicker fade-seq" data-seq="1">some moments</p>
+      <p class="kicker kicker--accent fade-seq" data-seq="2">are worth celebrating.</p>
+      <p class="open-especially fade-seq" data-seq="3">Especially this one.</p>
+      <h1 class="name-reveal" id="nameReveal" aria-label="Simran">
+        <span>S</span><span>i</span><span>m</span><span>r</span><span>a</span><span>n</span>
+      </h1>
+      <div class="date-reveal" id="dateReveal" aria-label="21 August">
+        <span class="date-num">21</span>
+        <span class="date-divider" aria-hidden="true"></span>
+        <span class="date-month" id="dateMonth">
+          <span>A</span><span>u</span><span>g</span><span>u</span><span>s</span><span>t</span>
+        </span>
+      </div>
+      <button class="begin-btn" id="beginBtn" aria-label="Begin the experience">
+        <svg class="begin-ring begin-ring--1" viewBox="0 0 200 200"><circle cx="100" cy="100" r="96"/></svg>
+        <svg class="begin-ring begin-ring--2" viewBox="0 0 200 200"><circle cx="100" cy="100" r="86"/></svg>
+        <span class="begin-core">
+          <span class="begin-dot"></span>
+          <span class="begin-label">Begin</span>
+        </span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ SCENE 01 — HERO ============ -->
+  <section class="scene" id="s-hero" data-scene="01" data-scene-name="The Beginning">
+    <div class="hero-orb hero-orb--a"></div>
+    <div class="hero-orb hero-orb--b"></div>
+    <div class="hero-orb hero-orb--c"></div>
+    <div class="scene-tag" data-reveal><span>01</span><i></i>The Beginning</div>
+    <div class="hero-inner">
+      <h2 class="hero-title">
+        <span class="line" data-reveal>Happy</span>
+        <span class="line line--accent" data-reveal>Birthday</span>
+      </h2>
+      <p class="hero-sub" data-reveal>Another beautiful year of you. Let's celebrate it properly.</p>
+      <div class="date-chip" data-reveal>
+        <span class="date-chip-num">21 <i>·</i> August</span>
+        <span class="date-chip-sep" aria-hidden="true"></span>
+        <span class="date-chip-label">The day worth celebrating</span>
+      </div>
+      <div class="scroll-cue" data-reveal>
+        <span>scroll to unwrap the day</span>
+        <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 4v16m0 0-6-6m6 6 6-6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCENE 02 — THE WISH (CAKE) ============ -->
+  <section class="scene" id="s-cake" data-scene="02" data-scene-name="The Wish">
+    <div class="scene-tag" data-reveal><span>02</span><i></i>The Wish</div>
+    <div class="section-head" data-reveal>
+      <h2>Make a wish</h2>
+      <div class="cake-hint-wrap" id="cakeHintWrap">
+        <div class="cake-hint-pulse"></div>
+        <p class="hint" id="cakeHint">
+          <span class="hint-emoji">✨</span>
+          Tap each candle to blow it out
+          <span class="hint-emoji">✨</span>
+        </p>
+        <div class="hint-arrows">
+          <span class="hint-arrow">&#8595;</span>
+          <span class="hint-arrow" style="animation-delay:.2s">&#8595;</span>
+          <span class="hint-arrow" style="animation-delay:.4s">&#8595;</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cake-stage" data-reveal>
+      <canvas id="smokeCanvas"></canvas>
+      <div class="cake-glow" id="cakeGlow"></div>
+      <div class="cake" id="cakeEl">
+        <div class="candles" id="candles">
+          <button class="candle candle--rose" data-lit="true" aria-label="Blow candle 1"><span class="candle-tooltip">Tap!</span><span class="flame"><span class="flame-core"></span></span><span class="wick"></span></button>
+          <button class="candle candle--gold" data-lit="true" aria-label="Blow candle 2"><span class="flame"><span class="flame-core"></span></span><span class="wick"></span></button>
+          <button class="candle candle--purple" data-lit="true" aria-label="Blow candle 3"><span class="flame"><span class="flame-core"></span></span><span class="wick"></span></button>
+          <button class="candle candle--rose" data-lit="true" aria-label="Blow candle 4"><span class="flame"><span class="flame-core"></span></span><span class="wick"></span></button>
+          <button class="candle candle--gold" data-lit="true" aria-label="Blow candle 5"><span class="flame"><span class="flame-core"></span></span><span class="wick"></span></button>
+        </div>
+        <div class="cake-tier tier-top">
+          <span class="drip d1"></span><span class="drip d2"></span><span class="drip d3"></span><span class="drip d4"></span><span class="drip d5"></span>
+          <span class="cake-deco deco-star">&#9733;</span>
+          <span class="cake-deco deco-heart">&#9829;</span>
+          <span class="cake-deco deco-star2">&#9733;</span>
+        </div>
+        <div class="cake-tier tier-bottom"></div>
+        <div class="cake-plate"></div>
+      </div>
+    </div>
+    <p class="cake-msg" id="cakeMsg">&#10024; Wish made — may it all come true. &#10024;</p>
+  </section>
+
+  <!-- ============ SCENE 03 — THE MEMORIES ============ -->
+  <section class="scene scene--tall" id="s-gallery" data-scene="03" data-scene-name="The Memories">
+    <div class="scene-tag" data-reveal><span>03</span><i></i>The Memories</div>
+    <div class="section-head" data-reveal>
+      <h2>Rewind with me</h2>
+      <p class="hint">Swipe through the frames &#8212; tap one to see it full screen</p>
+    </div>
+
+    <!-- Film strip perforation top -->
+    <div class="film-strip film-strip--top" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="gallery-viewport" id="galleryViewport">
+      <div class="gallery-track" id="galleryTrack">
+        <figure class="g-card" data-full="images/humans/together/IMG_20251114_235912.jpg"><img src="images/humans/together/IMG_20251114_235912.jpg" alt="Memory" loading="lazy"><figcaption>you light up the room</figcaption></figure>
+        
+        <figure class="g-card" data-full="images/humans/together/IMG_20260818_035935.jpg"><img src="images/humans/together/IMG_20260818_035935.jpg" alt="Memory" loading="lazy"><figcaption>radiant as always</figcaption></figure>
+        
+        <figure class="g-card" data-full="images/humans/1715463336034.jpg"><img src="images/humans/1715463336034.jpg" alt="Simran" loading="lazy"><figcaption>always the brightest</figcaption></figure>
+        
+        <figure class="g-card" data-full="images/humans/together/IMG_20251115_000119.jpg"><img src="images/humans/together/IMG_20251115_000119.jpg" alt="Memory" loading="lazy"><figcaption>sweet memories</figcaption></figure>
+        
+        <figure class="g-card" data-full="images/humans/together/IMG_20260818_040157.jpg"><img src="images/humans/together/IMG_20260818_040157.jpg" alt="Memory" loading="lazy"><figcaption>such a vibe</figcaption></figure>
+        
+        <figure class="g-card" data-full="images/humans/together/IMG_20260506_1222171.jpg"><img src="images/humans/together/IMG_20260506_1222171.jpg" alt="Memory" loading="lazy"><figcaption>that laugh, unmistakable</figcaption></figure>
+        
+        <figure class="g-card" data-full="images/humans/together/IMG-20250828-WA0006.jpg"><img src="images/humans/together/IMG-20250828-WA0006.jpg" alt="Memory" loading="lazy"><figcaption>the best times</figcaption></figure>
+        
+        <figure class="g-card" data-full="images/humans/together/IMG_20260506_1552181.jpg"><img src="images/humans/together/IMG_20260506_1552181.jpg" alt="Memory" loading="lazy" style="object-position: left center;"><figcaption>main character energy</figcaption></figure>
+        
+        <figure class="g-card" data-full="images/humans/together/IMG-20250912-WA0022.jpg"><img src="images/humans/together/IMG-20250912-WA0022.jpg" alt="Memory" loading="lazy"><figcaption>good vibes</figcaption></figure>
+        
+        <figure class="g-card" data-full="images/humans/together/IMG_20260506_170659.jpg"><img src="images/humans/together/IMG_20260506_170659.jpg" alt="Memory" loading="lazy"><figcaption>effortlessly you</figcaption></figure>
+        
+        <figure class="g-card" data-full="images/humans/together/IMG-20250828-WA0008.jpg"><img src="images/humans/together/IMG-20250828-WA0008.jpg" alt="Memory" loading="lazy"><figcaption>unforgettable moments</figcaption></figure>
+        
+        <figure class="g-card" data-full="images/humans/together/IMG_20260506_171822.jpg"><img src="images/humans/together/IMG_20260506_171822.jpg" alt="Memory" loading="lazy"><figcaption>a favourite, honestly</figcaption></figure>
+        
+        <figure class="g-card" data-full="images/humans/together/IMG_20241211_225804_462.jpg"><img src="images/humans/together/IMG_20241211_225804_462.jpg" alt="Together" loading="lazy" style="object-position: center bottom;"><figcaption>the whole gang, together</figcaption></figure>
+      </div>
+    </div>
+    <div class="gallery-dots" id="galleryDots"></div>
+
+    <!-- Film strip perforation bottom -->
+    <div class="film-strip film-strip--bottom" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </section>
+
+  <!-- Fullscreen lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+    <img id="lightboxImg" src="" alt="">
+  </div>
+
+  <!-- ============ SCENE 04 — THE MESSAGE ============ -->
+  <section class="scene" id="s-message" data-scene="04" data-scene-name="The Message">
+    <div class="scene-tag" data-reveal><span>04</span><i></i>The Message</div>
+    <div class="message-glow"></div>
+    <div class="message-card" data-reveal>
+      <!-- Golden monogram badge -->
+      <div class="monogram-badge">
+        <svg class="monogram-ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46"/></svg>
+        <span class="monogram-letter">S</span>
+      </div>
+      <!-- Decorative quote marks -->
+      <div class="quote-mark quote-mark--open">&#8220;</div>
+      <p class="message-lead">
+        <span class="ml-line">There are some people</span>
+        <span class="ml-line">who make ordinary moments</span>
+        <span class="ml-line">feel special.</span>
+      </p>
+      <div class="quote-mark quote-mark--close">&#8221;</div>
+      <p class="typewriter" id="typewriter1"></p>
+      <p class="typewriter" id="typewriter2"></p>
+      <p class="signed">Made just for you <span class="heart">&#9829;</span></p>
+    </div>
+  </section>
+
+  <!-- ============ SCENE 05 — SPECIAL MOMENTS ============ -->
+  <section class="scene scene--tall" id="s-moments" data-scene="05" data-scene-name="What Today Is About">
+    <div class="scene-tag" data-reveal><span>05</span><i></i>What Today Is About</div>
+    <div class="section-head" data-reveal>
+      <h2>Special moments</h2>
+    </div>
+    <div class="moments-grid">
+      <article class="moment-card" data-reveal>
+        <span class="moment-mark">friendship</span>
+        <h3>The bond we made</h3>
+        <p>Thanks for the friendship we've built — the kind that makes ordinary days feel a little more golden.</p>
+      </article>
+      <article class="moment-card" data-reveal>
+        <span class="moment-mark">gratitude</span>
+        <h3>For always being there</h3>
+        <p>Through everything, you've shown up for us. Today, this whole page shows up for you.</p>
+      </article>
+      <article class="moment-card" data-reveal>
+        <span class="moment-mark">joy</span>
+        <h3>Your most beautiful smile</h3>
+        <p>Fill today with it. Let it be the best memory yet — you deserve nothing less.</p>
+      </article>
+    </div>
+    <div class="story-timeline" data-reveal>
+      <div class="timeline-node"><span class="tl-dot"></span><span class="tl-label">Memories</span></div>
+      <div class="timeline-node"><span class="tl-dot"></span><span class="tl-label">Moments</span></div>
+      <div class="timeline-node timeline-node--anchor"><span class="tl-dot tl-dot--anchor"></span><span class="tl-label tl-label--anchor">21 August</span></div>
+      <div class="timeline-node"><span class="tl-dot"></span><span class="tl-label">Today</span></div>
+    </div>
+
+    <div class="polaroid-strip" data-reveal>
+      <img src="images/humans/together/17576892422641.jpg" alt="Together" loading="lazy">
+    </div>
+  </section>
+
+  <!-- ============ SCENE 06 — THE FINALE ============ -->
+  <section class="scene" id="s-finale" data-scene="06" data-scene-name="The Finale">
+    <canvas id="heartCanvas"></canvas>
+    <div class="finale-content">
+      <p class="kicker" data-reveal>happy birthday</p>
+      <h2 class="finale-title" data-reveal>Simran</h2>
+      <p class="finale-date" data-reveal><span>21</span><i></i><span>August</span></p>
+      <!-- DP circle photo — positioned at heart center -->
+      <div class="dp-circle" data-reveal>
+        <svg class="dp-ring" viewBox="0 0 120 120"><circle cx="60" cy="60" r="56"/></svg>
+        <img src="images/humans/together/IMG_20260818_035935.jpg" alt="Simran" class="dp-img">
+      </div>
+      <!-- Year stagger -->
+      <div class="finale-badge" data-reveal>
+        <span style="--i:0">2</span><span style="--i:1">0</span><span style="--i:2">2</span><span style="--i:3">6</span>
+      </div>
+      <p class="finale-msg" data-reveal>Here's to another year that fits you perfectly. Wishing you love, laughter, and every good thing this year has to offer.</p>
+      <!-- Premium vinyl replay button -->
+      <button class="replay-btn" id="replayBtn" data-reveal>
+        <span class="vinyl-disc" aria-hidden="true">
+          <span class="vinyl-inner"></span>
+        </span>
+        <span class="replay-label">Play it again</span>
+      </button>
+    </div>
+  </section>
+
+</main>
+
+<script src="js/particles.js?v=7"></script>
+<script src="js/app.js?v=8"></script>
+</body>
+</html>
