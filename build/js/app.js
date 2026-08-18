@@ -55,7 +55,7 @@
     fireworksAlreadySeen = false;
   }
 
-  var targetDate = new Date('2026-08-18T20:36:00+05:30').getTime(); // DEMO: 18 Aug 8:36 PM
+  var targetDate = new Date('2026-08-19T12:20:00+05:30').getTime(); // 19 Aug 12:20 PM
   var countdownOverlay = document.getElementById('countdownOverlay');
   var cdDays = document.getElementById('cd-days');
   var cdHours = document.getElementById('cd-hours');
@@ -166,7 +166,8 @@
   }
 
   function updateCountdown() {
-    var distance = 0; // Bypass countdown, always trigger fireworks immediately
+    var now = new Date().getTime();
+    var distance = targetDate - now;
 
     if (isAdmin) {
       distance = 0;
