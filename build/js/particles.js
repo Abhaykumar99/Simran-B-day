@@ -13,8 +13,17 @@
 
   function resizeCanvas(canvas){
     var rect = canvas.parentElement === document.body ? { width: window.innerWidth, height: window.innerHeight } : canvas.getBoundingClientRect();
-    canvas.width = Math.max(1, Math.floor(rect.width * DPR));
-    canvas.height = Math.max(1, Math.floor(rect.height * DPR));
+    var newW = Math.max(1, Math.floor(rect.width * DPR));
+    var newH = Math.max(1, Math.floor(rect.height * DPR));
+    
+    // Prevent clearing the canvas on mobile if only the height changes (e.g. URL bar scrolling)
+    if (isMobile && canvas.width === newW && canvas.height > 1) {
+      canvas.style.height = rect.height + 'px';
+      return { w: rect.width, h: rect.height };
+    }
+    
+    canvas.width = newW;
+    canvas.height = newH;
     canvas.style.width = rect.width + 'px';
     canvas.style.height = rect.height + 'px';
     return { w: rect.width, h: rect.height };
@@ -38,7 +47,8 @@
     // Heart/Star trail logic
     var touchPts = [];
     function addTouch(x,y){
-      for(var i=0;i<4;i++){
+      var count = isMobile ? 1 : 4;
+      for(var i=0;i<count;i++){
         var randType = Math.random();
         var pType = 'dot';
         if (randType > 0.7) pType = 'heart';
@@ -71,7 +81,8 @@
       var t = e.touches[0];
       if(t) {
         var dist = Math.abs(t.clientX - lastX) + Math.abs(t.clientY - lastY);
-        if(dist > 10) {
+        // Larger distance threshold on mobile to prevent excessive spawning on fast scroll
+        if(dist > (isMobile ? 30 : 10)) {
           addTouch(t.clientX, t.clientY);
           lastX = t.clientX; lastY = t.clientY;
         }
@@ -115,7 +126,7 @@
         ctx.scale(tp.r, tp.r);
         var alpha2 = tp.a * tp.life;
         
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = isMobile ? 0 : 15;
         
         if (tp.type === 'heart') {
           ctx.shadowColor = 'rgba(255,182,193,0.8)';
