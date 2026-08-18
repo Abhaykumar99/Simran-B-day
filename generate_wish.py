@@ -11,7 +11,7 @@ async def main():
     communicate = edge_tts.Communicate(
         text=PLAIN_TEXT, 
         voice="en-IN-NeerjaNeural",  # Indian English (Hinglish) voice
-        rate="-15%",
+        rate="+0%",  # Set back to normal conversational speed
         pitch="+5Hz"
     )
     await communicate.save("build/audio/wish.mp3")
