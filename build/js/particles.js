@@ -656,15 +656,21 @@
     var colors = ['#d8a05e', '#ffb6c1', '#ffffff', '#c0803c'];
 
     function burst() {
-      for(var i=0; i<150; i++) {
+      var count = isMobile ? 80 : 150;
+      var spread = isMobile ? 50 : 100;
+      var maxVx = isMobile ? 7 : 15;
+      var minVy = isMobile ? -16 : -20;
+      var maxVy = isMobile ? -26 : -35;
+      
+      for(var i=0; i<count; i++) {
         particles.push({
-          x: dims.w / 2 + rand(-100, 100), y: dims.h,
-          vx: rand(-12, 12), vy: rand(-20, -35),
-          size: rand(4, 10),
+          x: dims.w / 2 + rand(-spread, spread), y: dims.h + 10,
+          vx: rand(-maxVx, maxVx), vy: rand(maxVy, minVy),
+          size: rand(isMobile ? 3 : 4, isMobile ? 7 : 10),
           color: colors[Math.floor(Math.random()*colors.length)],
           rot: rand(0, Math.PI*2),
           vRot: rand(-0.2, 0.2),
-          life: 1, decay: rand(0.005, 0.012)
+          life: 1, decay: rand(isMobile ? 0.008 : 0.005, isMobile ? 0.018 : 0.012)
         });
       }
     }
