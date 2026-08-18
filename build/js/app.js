@@ -47,8 +47,8 @@
   // --- COUNTDOWN LOGIC & ADMIN OVERRIDE ---
   var isAdmin = urlParams.get('admin') === 'true' || urlParams.get('admin') === '1';
 
-  // Check if fireworks have already been shown (localStorage)
-  var fireworksAlreadySeen = localStorage.getItem('sb_fireworks_seen') === '1';
+  // Always show fireworks on load
+  var fireworksAlreadySeen = false;
   // Admin can force-reset by passing ?reset=1
   if (urlParams.get('reset') === '1') {
     localStorage.removeItem('sb_fireworks_seen');
@@ -166,8 +166,7 @@
   }
 
   function updateCountdown() {
-    var now = new Date().getTime();
-    var distance = targetDate - now;
+    var distance = 0; // Bypass countdown, always trigger fireworks immediately
 
     if (isAdmin) {
       distance = 0;
