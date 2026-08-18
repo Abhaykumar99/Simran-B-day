@@ -45,8 +45,15 @@
   }
 
   // --- COUNTDOWN LOGIC & ADMIN OVERRIDE ---
-  var isAdmin = true; // Temporarily set to true for you to see the fireworks!
-  // var isAdmin = urlParams.get('admin') === 'true' || urlParams.get('admin') === '1';
+  var isAdmin = urlParams.get('admin') === 'true' || urlParams.get('admin') === '1';
+
+  // Check if fireworks have already been shown (localStorage)
+  var fireworksAlreadySeen = localStorage.getItem('sb_fireworks_seen') === '1';
+  // Admin can force-reset by passing ?reset=1
+  if (urlParams.get('reset') === '1') {
+    localStorage.removeItem('sb_fireworks_seen');
+    fireworksAlreadySeen = false;
+  }
 
   var targetDate = new Date('2026-08-21T00:00:00+05:30').getTime();
   var countdownOverlay = document.getElementById('countdownOverlay');
@@ -97,6 +104,8 @@
             if (cdSecs) cdSecs.textContent = "00";
 
             setTimeout(function() {
+                // Mark fireworks as seen so they don't repeat
+                localStorage.setItem('sb_fireworks_seen', '1');
                 countdownOverlay.classList.add('is-hidden');
                 fakeLoad();
             }, 6500); // Wait 6.5s to let the full 5s premium firework show finish its trails
@@ -140,9 +149,14 @@
     }
   }
 
-  if (startBtn && startOverlay) {
+  if (fireworksAlreadySeen) {
+    // Fireworks already seen — skip startOverlay & countdown, go directly to loader
+    if (startOverlay) startOverlay.classList.add('is-hidden');
+    if (countdownOverlay) countdownOverlay.style.display = 'none';
+    fakeLoad();
+  } else if (startBtn && startOverlay) {
+    // First visit — show startOverlay, unlock audio, then start countdown
     startBtn.addEventListener('click', function() {
-      // Create global audio context on user interaction
       if (!window.GlobalAudioContext) {
         window.GlobalAudioContext = new (window.AudioContext || window.webkitAudioContext)();
       }
