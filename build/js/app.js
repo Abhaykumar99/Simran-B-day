@@ -303,11 +303,11 @@
     var especially = document.querySelector('.open-especially');
     setTimeout(function(){ especially.classList.add('in'); }, 500 + 2*650);
 
-    var svgWrap = document.querySelector('.name-reveal-svg');
-    if (svgWrap) {
-      setTimeout(function(){ svgWrap.classList.add('in'); }, 2200);
-    }
-    var nameEnd = 2200 + 1000; // wait for SVG animation to start before next elements
+    var letters = document.querySelectorAll('.name-reveal span');
+    letters.forEach(function(el, i){
+      setTimeout(function(){ el.classList.add('in'); }, 2200 + i*90);
+    });
+    var nameEnd = 2200 + letters.length*90;
 
     // Date reveal: "21" scales+blurs in, then "AUGUST" letters stagger
     var dateReveal = document.getElementById('dateReveal');

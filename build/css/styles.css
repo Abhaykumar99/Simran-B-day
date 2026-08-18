@@ -245,44 +245,22 @@ main{ position:relative; z-index:2; }
 
 .fade-seq{ opacity:0; transform:translateY(14px); transition:opacity 1.1s var(--ease-soft), transform 1.1s var(--ease-soft); }
 .fade-seq.in{ opacity:1; transform:translateY(0); }
-.open-especially{ font-family:var(--serif); font-style:italic; font-size:18px; color:var(--gold-soft); margin-top:6px; opacity:0; }
-.open-especially.in{ opacity:.9; }
-
-.name-reveal-svg {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 600px;
-  height: 120px;
-  margin-top: 22px;
+.name-reveal{
+  display:flex; margin-top:22px;
+  font-family:var(--serif); font-weight:500; font-size:clamp(46px,11vw,110px);
+  letter-spacing:.01em;
 }
-.name-reveal-svg svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
+.name-reveal span{
+  display:inline-block; opacity:0; transform:translateY(40px) rotateX(-40deg);
+  transform-origin:bottom;
+  transition:opacity .9s var(--ease-soft), transform .9s var(--ease-soft), text-shadow 1.5s ease;
+  background:linear-gradient(180deg, var(--gold-soft), var(--gold) 55%, var(--rose));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
 }
-.name-reveal-svg text {
-  font-family: 'Great Vibes', cursive;
-  font-size: 140px;
-  fill: transparent;
-  stroke: var(--c-accent);
-  stroke-width: 2px;
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  filter: drop-shadow(0 0 10px rgba(230,174,107,0));
-}
-.name-reveal-svg.in text {
-  animation: svgDraw 3.5s ease-in-out forwards, svgFill 2s ease-in-out forwards 2s;
-}
-
-@keyframes svgDraw {
-  0% { stroke-dashoffset: 1000; }
-  100% { stroke-dashoffset: 0; }
-}
-@keyframes svgFill {
-  0% { fill: transparent; filter: drop-shadow(0 0 10px rgba(230,174,107,0)); }
-  100% { fill: var(--c-accent); filter: drop-shadow(0 0 15px rgba(230,174,107,0.4)); }
+.name-reveal span.in{ 
+  opacity:1; 
+  transform:translateY(0) rotateX(0); 
+  text-shadow: 0 0 20px rgba(240,178,92,0.6), 0 0 40px rgba(240,178,92,0.2);
 }
 
 .date-reveal{
